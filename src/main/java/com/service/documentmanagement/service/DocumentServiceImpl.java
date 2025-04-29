@@ -5,10 +5,12 @@ import com.service.documentmanagement.repository.DocumentRepository;
 import com.service.documentmanagement.utility.DocumentData;
 import com.service.documentmanagement.utility.DocumentMetadataDTO;
 import com.service.documentmanagement.utility.FileParserUtil;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,9 +18,11 @@ import java.util.List;
 public class DocumentServiceImpl implements DocumentService {
 
     private final DocumentRepository documentRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public DocumentServiceImpl(DocumentRepository documentRepository) {
+    public DocumentServiceImpl(DocumentRepository documentRepository, RedisTemplate<String, Object> redisTemplate) {
         this.documentRepository = documentRepository;
+        this.redisTemplate = redisTemplate;
     }
 
     public Document saveDocument(MultipartFile file) throws IOException {
@@ -36,9 +40,22 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     public String getDocumentContentById(Long id) {
-        return documentRepository.findById(id)
+        String key = "doc::" + id;
+        Object cached = redisTemplate.opsForValue().get(key);
+
+        if (cached != null) {
+            return (String) cached;
+        }
+
+        // If not in Redis, fetch from DB
+        String content = documentRepository.findById(id)
                 .map(Document::getContent)
                 .orElseThrow(() -> new RuntimeException("Document not found with id: " + id));
+
+        // Cache in Redis
+        redisTemplate.opsForValue().set(key, content, Duration.ofMinutes(10));
+
+        return content;
     }
 
     public List<String> searchDocumentSnippets(String keyword) {
@@ -54,6 +71,9 @@ public class DocumentServiceImpl implements DocumentService {
                 })
                 .toList();
     }
+
+
+
 
 
 }

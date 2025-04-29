@@ -1,8 +1,7 @@
-server:
-  port: 8083
+
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/prod_db
+    url: jdbc:postgresql://host.docker.internal:5432/prod_db
     username: prod_user
     password: prod_password
     driver-class-name: org.postgresql.Driver
@@ -13,11 +12,14 @@ spring:
         format_sql: true
     hibernate:
       ddl-auto: update
+
+
   cache:
     type: redis
     host: localhost
     port: 6379
 
-logging:
-  level:
-    org.springframework: DEBUG
+
+#logging:
+#  level:
+#    org.springframework: DEBUG
