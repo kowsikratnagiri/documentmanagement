@@ -12,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -61,6 +62,8 @@ public class DocumentServiceImpl implements DocumentService {
     public List<String> searchDocumentSnippets(String keyword) {
         List<String> contents = documentRepository.searchContentOnly(keyword);
 
+        contents.forEach(System.out::println);
+
         return contents.stream()
                 .map(content -> {
                     int idx = content.toLowerCase().indexOf(keyword.toLowerCase());
@@ -71,6 +74,29 @@ public class DocumentServiceImpl implements DocumentService {
                 })
                 .toList();
     }
+
+    public List<String> searchDocumentSnippets1(String keyword) {
+        List<String> contents = documentRepository.searchContentOnly(keyword);
+
+        List<String> snippets = new ArrayList<>();
+        String lowerKeyword = keyword.toLowerCase();
+
+        for (String content : contents) {
+            String lowerContent = content.toLowerCase();
+            int index = 0;
+
+            while ((index = lowerContent.indexOf(lowerKeyword, index)) != -1) {
+                int start = Math.max(0, index - 30);
+                int end = Math.min(content.length(), index + keyword.length() + 30);
+                snippets.add("... " + content.substring(start, end) + " ...");
+
+                index += keyword.length(); // move past the current match
+            }
+        }
+
+        return snippets;
+    }
+
 
 
 

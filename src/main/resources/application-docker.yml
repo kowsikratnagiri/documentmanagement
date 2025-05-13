@@ -13,13 +13,22 @@ spring:
     hibernate:
       ddl-auto: update
 
-
   cache:
     type: redis
-    host: localhost
+    host: host.docker.internal
     port: 6379
 
 
-#logging:
-#  level:
-#    org.springframework: DEBUG
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v1/api-docs
+  swagger-ui:
+    defaultModelsExpandDepth: -1
+    defaultModelExpandDepth: 0
+    displayOperationId: true
+
+
+logging:
+  level:
+    org.springframework: DEBUG

@@ -13,6 +13,8 @@ import java.util.List;
 
 @Repository
 public interface DocumentRepository extends JpaRepository<Document, Long> {
+
+
     Page<Document> findAll(Specification<Document> spec, Pageable pageable);
 
     @Query(value = "SELECT content FROM document  WHERE LOWER(content) ILIKE LOWER(CONCAT('%', :keyword, '%'))",nativeQuery = true)
@@ -20,6 +22,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
 
     @Query(value = "SELECT content FROM document WHERE LOWER(content) ILIKE LOWER(CONCAT('%', :keyword, '%'))", nativeQuery = true)
     List<String> searchContentOnly(@Param("keyword") String keyword);
+
 
 
 

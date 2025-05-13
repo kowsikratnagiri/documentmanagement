@@ -85,6 +85,4 @@ public class DocumentController {
         List<String> snippets = documentService.searchDocumentSnippets(keyword);
         return ResponseEntity.ok(snippets);
     }
-
-
 }

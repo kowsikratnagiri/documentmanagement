@@ -17,19 +17,22 @@ spring:
       hibernate:
         format_sql: true
     ddl-auto: update
+    open-in-view: false
   cache:
     type: redis
     host: localhost
     port: 6379
 
-
 springdoc:
   api-docs:
     enabled: true
     path: /v1/api-docs
-    swagger-ui:
-    defaultModelsExpandDepth=-1:
+  swagger-ui:
+    defaultModelsExpandDepth: -1
+    defaultModelExpandDepth: 0
+    displayOperationId: true
 
-#logging:
-#  level.org:
-#  springframework: DEBUG
+
+logging:
+  level.org:
+  springframework: DEBUG
